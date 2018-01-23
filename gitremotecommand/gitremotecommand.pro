@@ -2,11 +2,13 @@ DEFINES += GITREMOTECOMMAND_LIBRARY
 
 # GitRemoteCommand files
 
-SOURCES += gitremotecommandplugin.cpp
+SOURCES += gitremotecommandplugin.cpp \
+    wizard/gitremotecommandpage.cpp
 
 HEADERS += gitremotecommandplugin.h \
         gitremotecommand_global.h \
-        gitremotecommandconstants.h
+        gitremotecommandconstants.h \
+    wizard/gitremotecommandpage.h
 
 # Qt Creator linking
 
