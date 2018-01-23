@@ -28,6 +28,7 @@ SOFTWARE.",
     "Description" : "Plugin for creating new git repository from the Qt Creator wizard.",
     "Url" : "https://www.milosolutions.com/en/",
     "Dependencies" : [
-        { "Name" : "Core", "Version" : "4.5.0" }
+        { "Name" : "Core", "Version" : "4.5.0" },
+        { "Name" : "ProjectExplorer", "Version" : "4.5.0" }
     ]
 }
