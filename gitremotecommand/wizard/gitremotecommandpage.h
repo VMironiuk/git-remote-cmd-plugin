@@ -29,6 +29,21 @@ class GitRemoteCommandPage : public Utils::ShellCommandPage
 
 public:
     GitRemoteCommandPage();
+
+    void initializePage() override;
+    void setVersionControlId(const QString &id);
+    void setRunMessage(const QString &msg);
+    void setRepoCreationData(bool init, const QString &dir, const QString &repo);
+
+private slots:
+    void delayedInitialize();
+
+private:
+    QString m_vcsId;
+    QString m_runMessage;
+    QString m_remoteRepository;
+    QString m_baseDirectory;
+    bool m_doInitCommand = false;
 };
 
 } // namespace Internal
