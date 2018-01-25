@@ -1,6 +1,8 @@
 #include "gitremotecommandplugin.h"
 #include "gitremotecommandconstants.h"
 
+#include "wizard/gitremotecommandpage.h"
+
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
 #include <coreplugin/actionmanager/actionmanager.h>
@@ -8,10 +10,14 @@
 #include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/coreconstants.h>
 
+#include <projectexplorer/jsonwizard/jsonwizardfactory.h>
+
 #include <QAction>
 #include <QMessageBox>
 #include <QMainWindow>
 #include <QMenu>
+
+using namespace ProjectExplorer;
 
 namespace GitRemoteCommand {
 namespace Internal {
@@ -49,6 +55,8 @@ bool GitRemoteCommandPlugin::initialize(const QStringList &arguments, QString *e
     menu->menu()->setTitle(tr("GitRemoteCommand"));
     menu->addAction(cmd);
     Core::ActionManager::actionContainer(Core::Constants::M_TOOLS)->addMenu(menu);
+
+    JsonWizardFactory::registerPageFactory(new Internal::GitRemoteCommandPageFactory);
 
     return true;
 }
