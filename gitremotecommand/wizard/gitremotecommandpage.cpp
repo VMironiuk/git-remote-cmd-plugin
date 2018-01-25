@@ -1,11 +1,14 @@
 #include "gitremotecommandpage.h"
 
+#include <gitclient.h>
+
 #include <coreplugin/iversioncontrol.h>
 #include <coreplugin/vcsmanager.h>
 #include <projectexplorer/jsonwizard/jsonwizard.h>
 
 #include <utils/qtcassert.h>
 
+#include <QAbstractButton>
 #include <QDebug>
 #include <QDir>
 #include <QTimer>
@@ -133,27 +136,27 @@ void GitRemoteCommandPage::delayedInitialize()
     auto wiz = qobject_cast<JsonWizard *>(wizard());
     QTC_ASSERT(wiz, return);
 
-    const QString vcsId = wiz->expander()->expand(m_vcsId);
-    IVersionControl *vc = VcsManager::versionControl(Id::fromString(vcsId));
-    if (!vc) {
-        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-                                                  "\"%1\" (%2) not found.")
-                      .arg(QLatin1String(GITREMOTECOMMAND_VCSID), vcsId);
-        return;
-    }
-    if (!vc->isConfigured()) {
-        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-                                                  "Version control \"%1\" is not configured.")
-                      .arg(vcsId);
-        return;
-    }
-    if (!vc->supportsOperation(IVersionControl::CreateRepositoryOperation)) {
-        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-                                                  "Version control \"%1\" does not support"
-                                                  " a repository creation.")
-                      .arg(vcsId);
-        return;
-    }
+//    const QString vcsId = wiz->expander()->expand(m_vcsId);
+//    IVersionControl *vc = VcsManager::versionControl(Id::fromString(vcsId));
+//    if (!vc) {
+//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+//                                                  "\"%1\" (%2) not found.")
+//                      .arg(QLatin1String(GITREMOTECOMMAND_VCSID), vcsId);
+//        return;
+//    }
+//    if (!vc->isConfigured()) {
+//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+//                                                  "Version control \"%1\" is not configured.")
+//                      .arg(vcsId);
+//        return;
+//    }
+//    if (!vc->supportsOperation(IVersionControl::CreateRepositoryOperation)) {
+//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+//                                                  "Version control \"%1\" does not support"
+//                                                  " a repository creation.")
+//                      .arg(vcsId);
+//        return;
+//    }
 
     const QString repo = wiz->expander()->expand(m_remoteRepository);
     if (repo.isEmpty()) {
@@ -164,19 +167,26 @@ void GitRemoteCommandPage::delayedInitialize()
         return;
     }
 
-    const QString baseDir = wiz->expander()->expand(m_baseDirectory);
-    if (!QDir(baseDir).exists()) {
+    const QDir baseDir(wiz->expander()->expand(m_baseDirectory));
+    if (!baseDir.exists()) {
+        if (!baseDir.mkdir(baseDir.absolutePath())) {
         qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-                                                  "\"%1\" (%2) does not exist.")
-                      .arg(QLatin1String(GITREMOTECOMMAND_BASE_DIR), baseDir);
+                                                  "\"%1\" (%2) couldn't create.")
+                      .arg(QLatin1String(GITREMOTECOMMAND_BASE_DIR), baseDir.absolutePath());
         return;
+        }
     }
 
     const QString runMessage = wiz->expander()->expand(m_runMessage);
     if (!runMessage.isEmpty())
         setStartedStatus(runMessage);
 
-    // TODO: start shell command
+    GitClient *git = new GitClient(baseDir.absolutePath(), repo);
+    connect(git, &GitClient::executionFinished, git, &GitClient::deleteLater);
+    git->execute();
+    wizard()->button(QWizard::FinishButton)->setEnabled(true);
+
+    // TODO: start shell command to visualise the process
 }
 
 } // namepsace Internal

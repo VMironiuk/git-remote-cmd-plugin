@@ -3,12 +3,14 @@ DEFINES += GITREMOTECOMMAND_LIBRARY
 # GitRemoteCommand files
 
 SOURCES += gitremotecommandplugin.cpp \
-    wizard/gitremotecommandpage.cpp
+    wizard/gitremotecommandpage.cpp \
+    gitclient.cpp
 
 HEADERS += gitremotecommandplugin.h \
         gitremotecommand_global.h \
         gitremotecommandconstants.h \
-    wizard/gitremotecommandpage.h
+    wizard/gitremotecommandpage.h \
+    gitclient.h
 
 # Qt Creator linking
 
@@ -48,3 +50,5 @@ QTC_PLUGIN_RECOMMENDS += \
 ###### End _dependencies.pri contents ######
 
 include($$IDE_SOURCE_TREE/src/qtcreatorplugin.pri)
+
+DISTFILES +=
