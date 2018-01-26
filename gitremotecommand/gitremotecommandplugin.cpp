@@ -10,6 +10,8 @@
 #include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/coreconstants.h>
 
+//#include <git/gitclient.h>
+
 #include <projectexplorer/jsonwizard/jsonwizardfactory.h>
 
 #include <QAction>
@@ -25,6 +27,7 @@ namespace Internal {
 GitRemoteCommandPlugin::GitRemoteCommandPlugin()
 {
     // Create your members
+//    Git::Internal::GitClient *git = new Git::Internal::GitClient;
 }
 
 GitRemoteCommandPlugin::~GitRemoteCommandPlugin()

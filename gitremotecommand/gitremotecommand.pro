@@ -3,14 +3,12 @@ DEFINES += GITREMOTECOMMAND_LIBRARY
 # GitRemoteCommand files
 
 SOURCES += gitremotecommandplugin.cpp \
-    wizard/gitremotecommandpage.cpp \
-    gitclient.cpp
+    wizard/gitremotecommandpage.cpp
 
 HEADERS += gitremotecommandplugin.h \
         gitremotecommand_global.h \
         gitremotecommandconstants.h \
-    wizard/gitremotecommandpage.h \
-    gitclient.h
+    wizard/gitremotecommandpage.h
 
 # Qt Creator linking
 
@@ -42,7 +40,9 @@ QTC_LIB_DEPENDS += \
 
 QTC_PLUGIN_DEPENDS += \
     coreplugin \
-    projectexplorer
+    projectexplorer \
+    vcsbase \
+    git
 
 QTC_PLUGIN_RECOMMENDS += \
     # optional plugin dependencies. nothing here at this time

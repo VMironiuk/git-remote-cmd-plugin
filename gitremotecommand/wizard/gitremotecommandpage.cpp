@@ -1,16 +1,16 @@
 #include "gitremotecommandpage.h"
 
-#include <gitclient.h>
-
 #include <coreplugin/iversioncontrol.h>
 #include <coreplugin/vcsmanager.h>
 #include <projectexplorer/jsonwizard/jsonwizard.h>
+#include <vcsbase/vcscommand.h>
 
 #include <utils/qtcassert.h>
 
 #include <QAbstractButton>
 #include <QDebug>
 #include <QDir>
+#include <QProcessEnvironment>
 #include <QTimer>
 
 using namespace Core;
@@ -181,12 +181,28 @@ void GitRemoteCommandPage::delayedInitialize()
     if (!runMessage.isEmpty())
         setStartedStatus(runMessage);
 
-    GitClient *git = new GitClient(baseDir.absolutePath(), repo);
-    connect(git, &GitClient::executionFinished, git, &GitClient::deleteLater);
-    git->execute();
-    wizard()->button(QWizard::FinishButton)->setEnabled(true);
+    Core::ShellCommand *command = createInitialCommitCommand(baseDir.absolutePath(), repo);
+    start(command);
+}
 
-    // TODO: start shell command to visualise the process
+Core::ShellCommand *GitRemoteCommandPage::createInitialCommitCommand(const QString &baseDirectory,
+                                                                     const QString &remoteRepo)
+{
+    QStringList args = {"init"};
+    auto command = new VcsBase::VcsCommand(baseDirectory, QProcessEnvironment());
+    command->addFlags(VcsBase::VcsCommand::SuppressStdErr);
+    command->addJob(Utils::FileName::fromString("git"), args, -1);
+
+    if (!remoteRepo.isEmpty()) {
+        args = QStringList() << "remote" << "add" << "origin" << remoteRepo;
+        command->addJob(Utils::FileName::fromString("git"), args, -1);
+
+        // TODO: add files here
+
+        args = QStringList() << "push" << "-u" << "origin" << "master";
+        command->addJob(Utils::FileName::fromString("git"), args, -1);
+    }
+    return command;
 }
 
 } // namepsace Internal

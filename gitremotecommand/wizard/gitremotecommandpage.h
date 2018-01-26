@@ -3,6 +3,7 @@
 
 #include "../gitremotecommand_global.h"
 
+#include <coreplugin/shellcommand.h>
 #include <projectexplorer/jsonwizard/jsonwizardpagefactory.h>
 #include <utils/shellcommandpage.h>
 
@@ -37,6 +38,10 @@ public:
 
 private slots:
     void delayedInitialize();
+
+private:
+    Core::ShellCommand *createInitialCommitCommand(const QString &baseDirectory,
+                                                   const QString &remoteRepo);
 
 private:
     QString m_vcsId;
