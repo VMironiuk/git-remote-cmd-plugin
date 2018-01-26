@@ -136,27 +136,27 @@ void GitRemoteCommandPage::delayedInitialize()
     auto wiz = qobject_cast<JsonWizard *>(wizard());
     QTC_ASSERT(wiz, return);
 
-//    const QString vcsId = wiz->expander()->expand(m_vcsId);
-//    IVersionControl *vc = VcsManager::versionControl(Id::fromString(vcsId));
-//    if (!vc) {
-//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-//                                                  "\"%1\" (%2) not found.")
-//                      .arg(QLatin1String(GITREMOTECOMMAND_VCSID), vcsId);
-//        return;
-//    }
-//    if (!vc->isConfigured()) {
-//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-//                                                  "Version control \"%1\" is not configured.")
-//                      .arg(vcsId);
-//        return;
-//    }
-//    if (!vc->supportsOperation(IVersionControl::CreateRepositoryOperation)) {
-//        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
-//                                                  "Version control \"%1\" does not support"
-//                                                  " a repository creation.")
-//                      .arg(vcsId);
-//        return;
-//    }
+    const QString vcsId = wiz->expander()->expand(m_vcsId);
+    IVersionControl *vc = VcsManager::versionControl(Id::fromString(vcsId));
+    if (!vc) {
+        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+                                                  "\"%1\" (%2) not found.")
+                      .arg(QLatin1String(GITREMOTECOMMAND_VCSID), vcsId);
+        return;
+    }
+    if (!vc->isConfigured()) {
+        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+                                                  "Version control \"%1\" is not configured.")
+                      .arg(vcsId);
+        return;
+    }
+    if (!vc->supportsOperation(IVersionControl::CreateRepositoryOperation)) {
+        qWarning() << QCoreApplication::translate("GitRemoteCommand::GitRemoteCommandPage",
+                                                  "Version control \"%1\" does not support"
+                                                  " a repository creation.")
+                      .arg(vcsId);
+        return;
+    }
 
     const QString repo = wiz->expander()->expand(m_remoteRepository);
     if (repo.isEmpty()) {
