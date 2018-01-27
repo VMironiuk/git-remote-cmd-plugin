@@ -4,6 +4,12 @@
 
 #include <extensionsystem/iplugin.h>
 
+namespace Git {
+namespace Internal {
+class GitClient;
+}
+}
+
 namespace GitRemoteCommand {
 namespace Internal {
 
@@ -16,12 +22,18 @@ public:
     GitRemoteCommandPlugin();
     ~GitRemoteCommandPlugin() override;
 
+    static GitRemoteCommandPlugin *instance();
+    static Git::Internal::GitClient *client();
+
     bool initialize(const QStringList &arguments, QString *errorString) override;
     void extensionsInitialized() override;
     ShutdownFlag aboutToShutdown() override;
 
 private:
     void triggerAction();
+
+private:
+    Git::Internal::GitClient *m_gitClient = nullptr;
 };
 
 } // namespace Internal

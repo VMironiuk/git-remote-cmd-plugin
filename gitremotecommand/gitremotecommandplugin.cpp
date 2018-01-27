@@ -10,7 +10,7 @@
 #include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/coreconstants.h>
 
-//#include <git/gitclient.h>
+#include <git/gitclient.h>
 
 #include <projectexplorer/jsonwizard/jsonwizardfactory.h>
 
@@ -24,16 +24,29 @@ using namespace ProjectExplorer;
 namespace GitRemoteCommand {
 namespace Internal {
 
+static GitRemoteCommandPlugin *m_instance = nullptr;
+
 GitRemoteCommandPlugin::GitRemoteCommandPlugin()
 {
     // Create your members
-//    Git::Internal::GitClient *git = new Git::Internal::GitClient;
+    m_instance = this;
 }
 
 GitRemoteCommandPlugin::~GitRemoteCommandPlugin()
 {
     // Unregister objects from the plugin manager's object pool
     // Delete members
+    delete m_gitClient;
+}
+
+GitRemoteCommandPlugin *GitRemoteCommandPlugin::instance()
+{
+    return m_instance;
+}
+
+Git::Internal::GitClient *GitRemoteCommandPlugin::client()
+{
+    return m_instance->m_gitClient;
 }
 
 bool GitRemoteCommandPlugin::initialize(const QStringList &arguments, QString *errorString)
@@ -47,6 +60,8 @@ bool GitRemoteCommandPlugin::initialize(const QStringList &arguments, QString *e
 
     Q_UNUSED(arguments)
     Q_UNUSED(errorString)
+
+    m_gitClient = new Git::Internal::GitClient;
 
     auto action = new QAction(tr("GitRemoteCommand Action"), this);
     Core::Command *cmd = Core::ActionManager::registerAction(action, Constants::ACTION_ID,

@@ -1,7 +1,10 @@
 #include "gitremotecommandpage.h"
 
+#include "gitremotecommandplugin.h"
+
 #include <coreplugin/iversioncontrol.h>
 #include <coreplugin/vcsmanager.h>
+#include <git/gitclient.h>
 #include <projectexplorer/jsonwizard/jsonwizard.h>
 #include <vcsbase/vcscommand.h>
 
@@ -189,18 +192,20 @@ Core::ShellCommand *GitRemoteCommandPage::createInitialCommitCommand(const QStri
                                                                      const QString &remoteRepo)
 {
     QStringList args = {"init"};
-    auto command = new VcsBase::VcsCommand(baseDirectory, QProcessEnvironment());
+    Git::Internal::GitClient *git = GitRemoteCommandPlugin::client();
+
+    auto command = new VcsBase::VcsCommand(baseDirectory, git->processEnvironment());
     command->addFlags(VcsBase::VcsCommand::SuppressStdErr);
-    command->addJob(Utils::FileName::fromString("git"), args, -1);
+    command->addJob(git->vcsBinary(), args, -1);
 
     if (!remoteRepo.isEmpty()) {
         args = QStringList() << "remote" << "add" << "origin" << remoteRepo;
-        command->addJob(Utils::FileName::fromString("git"), args, -1);
+        command->addJob(git->vcsBinary(), args, -1);
 
         // TODO: add files here
 
         args = QStringList() << "push" << "-u" << "origin" << "master";
-        command->addJob(Utils::FileName::fromString("git"), args, -1);
+        command->addJob(git->vcsBinary(), args, -1);
     }
     return command;
 }
