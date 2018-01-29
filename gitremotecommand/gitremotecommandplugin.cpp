@@ -2,6 +2,7 @@
 #include "gitremotecommandconstants.h"
 
 #include "wizard/gitremotecommandpage.h"
+#include "wizard/jsonsummarypage.h"
 
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
@@ -75,6 +76,7 @@ bool GitRemoteCommandPlugin::initialize(const QStringList &arguments, QString *e
     Core::ActionManager::actionContainer(Core::Constants::M_TOOLS)->addMenu(menu);
 
     JsonWizardFactory::registerPageFactory(new Internal::GitRemoteCommandPageFactory);
+    JsonWizardFactory::registerPageFactory(new ProjectExplorer::SummaryPageFactory);
 
     return true;
 }
