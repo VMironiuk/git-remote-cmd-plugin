@@ -25,7 +25,9 @@
 
 #pragma once
 
-#include "projectexplorer/projectnodes.h"
+#include "../gitremotecommand_global.h"
+
+#include <projectexplorer/projectnodes.h>
 
 #include <coreplugin/generatedfile.h>
 #include <coreplugin/iwizardfactory.h>

@@ -26,21 +26,28 @@
 #include "projectwizardpage.h"
 #include "ui_projectwizardpage.h"
 
-#include "projectexplorer/project.h"
-#include "projectexplorer/projectexplorer.h"
-#include "projectexplorer/session.h"
+#include "gitremotecommandplugin.h"
+
+#include <projectexplorer/project.h>
+#include <projectexplorer/projectexplorer.h>
+#include <projectexplorer/session.h>
 
 #include <coreplugin/icore.h>
 #include <coreplugin/iversioncontrol.h>
 #include <coreplugin/iwizardfactory.h>
 #include <coreplugin/vcsmanager.h>
+
+#include <git/gitclient.h>
+
 #include <utils/algorithm.h>
 #include <utils/fileutils.h>
 #include <utils/qtcassert.h>
 #include <utils/stringutils.h>
 #include <utils/treemodel.h>
 #include <utils/wizard.h>
+
 #include <vcsbase/vcsbaseconstants.h>
+#include <vcsbase/vcscommand.h>
 
 #include <QDir>
 #include <QTextStream>
@@ -433,6 +440,29 @@ bool ProjectWizardPage::runVersionControl(const QList<GeneratedFile> &files, QSt
                 *errorMessage = tr("Failed to add \"%1\" to the version control system.").arg(generatedFile.path());
                 return false;
             }
+        }
+    }
+    // Add to remote? Now, only for Git
+    // TODO:
+    //  * validate remote URL;
+    //  * check response after command run;
+    //  * maybe move this to another place, or find better solution for implementation
+    if (versionControl->id() == Core::Id(VcsBase::Constants::VCS_ID_GIT)
+            && !m_ui->gitRepoLineEdit->text().isEmpty()) {
+        Git::Internal::GitClient *git = GitRemoteCommand::Internal::GitRemoteCommandPlugin::client();
+        VcsBase::VcsCommand command(m_commonDirectory, git->processEnvironment());
+        QStringList args = {"remote", "add", "origin", m_ui->gitRepoLineEdit->text()};
+        command.runCommand(git->vcsBinary(), args, git->vcsTimeoutS());
+
+        // Push to remote?
+        if (m_ui->pushToRemoteCheckBox->isChecked()) {
+            // commit...
+            args = QStringList{"commit", "-m", "Initial commit"};
+            command.runCommand(git->vcsBinary(), args, git->vcsTimeoutS());
+
+            // ... and push
+            args = QStringList{"push", "-u", "origin", "master"};
+            command.runCommand(git->vcsBinary(), args, git->vcsTimeoutS());
         }
     }
     return true;
