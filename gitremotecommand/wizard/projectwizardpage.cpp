@@ -288,6 +288,9 @@ ProjectWizardPage::ProjectWizardPage(QWidget *parent) : WizardPage(parent),
             this, &ProjectWizardPage::projectChanged);
     connect(m_ui->addToVersionControlComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &ProjectWizardPage::versionControlChanged);
+    connect(m_ui->addToVersionControlComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &ProjectWizardPage::updateGitRepositoryUiElements);
+    connect(m_ui->gitRepoLineEdit, &QLineEdit::textChanged, this, &ProjectWizardPage::updatePushToRemoteUiElements);
     connect(m_ui->vcsManageButton, &QAbstractButton::clicked, this, &ProjectWizardPage::manageVcs);
     setProperty(SHORT_TITLE_PROPERTY, tr("Summary"));
 
@@ -567,6 +570,35 @@ void ProjectWizardPage::hideVersionControlUiElements()
     m_ui->addToVersionControlLabel->hide();
     m_ui->vcsManageButton->hide();
     m_ui->addToVersionControlComboBox->hide();
+    m_ui->gitRepoLabel->hide();
+    m_ui->gitRepoLineEdit->hide();
+    m_ui->pushToRemoteCheckBox->hide();
+}
+
+void ProjectWizardPage::updateGitRepositoryUiElements()
+{
+    auto versionControl = currentVersionControl();
+    const bool enabled = versionControl != nullptr
+            && versionControl->id() == Core::Id(VcsBase::Constants::VCS_ID_GIT);
+
+    m_ui->gitRepoLabel->setEnabled(enabled);
+    m_ui->gitRepoLineEdit->setEnabled(enabled);
+
+    if (!enabled)
+        m_ui->gitRepoLineEdit->clear();
+}
+
+void ProjectWizardPage::updatePushToRemoteUiElements(const QString &text)
+{
+    auto versionControl = currentVersionControl();
+    const bool enabled = versionControl != nullptr
+            && versionControl->id() == Core::Id(VcsBase::Constants::VCS_ID_GIT)
+            && !text.isEmpty();
+
+    m_ui->pushToRemoteCheckBox->setEnabled(enabled);
+
+    if (!enabled)
+        m_ui->pushToRemoteCheckBox->setChecked(false);
 }
 
 void ProjectWizardPage::setProjectUiVisible(bool visible)

@@ -29,7 +29,6 @@
 #include <projectexplorer/projectexplorerconstants.h>
 #include <projectexplorer/projectnodes.h>
 #include <projectexplorer/session.h>
-
 #include <projectexplorer/projecttree.h>
 
 #include <coreplugin/coreconstants.h>

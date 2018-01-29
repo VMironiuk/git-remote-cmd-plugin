@@ -84,6 +84,8 @@ private:
     void projectChanged(int);
     void manageVcs();
     void hideVersionControlUiElements();
+    void updateGitRepositoryUiElements();
+    void updatePushToRemoteUiElements(const QString &text);
 
     void setAdditionalInfo(const QString &text);
     void setAddingSubProject(bool addingSubProject);
